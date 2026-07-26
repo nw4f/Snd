@@ -3,14 +3,6 @@
 
 #include <nw/types.h>
 
-#ifndef static_assert
-    // https://stackoverflow.com/a/1597129
-    #define TOKENPASTE(x, y) x ## y
-    #define TOKENPASTE2(x, y) TOKENPASTE(x, y)
-
-    #define static_assert(condition, ...) typedef int TOKENPASTE2(static_assert_, __LINE__)[(condition) ? 1 : -1]
-#endif // static_assert
-
 #ifdef NW_PLATFORM_CAFE
   #include <cafe/pad.h>   // PAD_MAX_CONTROLLERS
 #else
@@ -18,15 +10,6 @@
 #endif
 
 namespace nw { namespace snd {
-
-static const int DRC_OUT_COUNT = 1;
-
-enum OutputDevice
-{
-    OUTPUT_DEVICE_MAIN,
-    OUTPUT_DEVICE_DRC,
-    OUTPUT_DEVICE_COUNT
-};
 
 enum OutputLine
 {
@@ -44,6 +27,23 @@ enum AuxBus
     AUX_BUS_B,
     AUX_BUS_C,
     AUX_BUS_NUM
+};
+
+enum SeqMute
+{
+    SEQ_MUTE_OFF,
+    SEQ_MUTE_NO_STOP,
+    SEQ_MUTE_RELEASE,
+    SEQ_MUTE_STOP
+};
+
+static const int DRC_OUT_COUNT = 1;
+
+enum OutputDevice
+{
+    OUTPUT_DEVICE_MAIN,
+    OUTPUT_DEVICE_DRC,
+    OUTPUT_DEVICE_COUNT
 };
 
 static const u32 WAVE_CHANNEL_MAX = 2;
@@ -76,6 +76,25 @@ enum WaveType
     WAVE_TYPE_DSPADPCM,
     WAVE_TYPE_INVALID = -1
 };
+
+struct AdshrCurve
+{
+    u8 attack;
+    u8 decay;
+    u8 sustain;
+    u8 hold;
+    u8 release;
+
+    AdshrCurve(u8 a = 0, u8 d = 0, u8 s = 0, u8 h = 0, u8 r = 0)
+        : attack(a)
+        , decay(d)
+        , sustain(s)
+        , hold(h)
+        , release(r)
+    {
+    }
+};
+static_assert(sizeof(AdshrCurve) == 5);
 
 enum BiquadFilterType
 {
